@@ -8,17 +8,12 @@ import numpy as np
 from dog_breed_names import dog_names
 
 app = Flask(__name__)
-CORS(app,origins="*")
+CORS(app, origins="*")
+
 model = load_model("dog_model.keras")
 class_names = dog_names()
 
 def format_breed_name(breed_name):
-    words = breed_name.split()
-    formatted_words = [word.capitalize() for word in words]
-    return "_".join(formatted_words)
-
-def format_breed_name(breed_name):
-    # Split the breed name into words and capitalize the first letter of each word
     words = breed_name.split()
     formatted_words = [word.capitalize() for word in words]
     return "_".join(formatted_words)
@@ -37,8 +32,17 @@ def scrape_dog_description(dog_name):
     else:
         return ["Description not found."]
 
-@app.route("/predict", methods=["POST"])
+@app.route("/predict", methods=["POST", "OPTIONS"])  
 def predict():
+    if request.method == "OPTIONS":
+        headers = {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "POST",
+            "Access-Control-Allow-Headers": "Content-Type",
+            "Access-Control-Max-Age": "86400",  
+        }
+        return ("", 204, headers)
+
     if "file" not in request.files:
         return jsonify({"error": "No file part"}), 400
 
@@ -58,7 +62,11 @@ def predict():
         breed_name_final = breed_name.split("-")[1]
         breed_description = scrape_dog_description(breed_name_final)
         
-        return jsonify({"prediction": breed_name, "description": breed_description})
+        headers = {
+            "Access-Control-Allow-Origin": "*",
+        }
+
+        return jsonify({"prediction": breed_name, "description": breed_description}), 200, headers
     
     except Exception as e:
         return jsonify({"error": str(e)}), 400
