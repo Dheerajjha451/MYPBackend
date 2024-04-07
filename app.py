@@ -8,7 +8,7 @@ import numpy as np
 from dog_breed_names import dog_names
 
 app = Flask(__name__)
-CORS(app)
+CORS(app,origins="*")
 model = load_model("dog_model.keras")
 class_names = dog_names()
 
