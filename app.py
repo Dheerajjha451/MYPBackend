@@ -8,17 +8,12 @@ import numpy as np
 from dog_breed_names import dog_names
 
 app = Flask(__name__)
-CORS(app,origins="*")
+CORS(app)  # Enable CORS for all origins
+
 model = load_model("dog_model.keras")
 class_names = dog_names()
 
 def format_breed_name(breed_name):
-    words = breed_name.split()
-    formatted_words = [word.capitalize() for word in words]
-    return "_".join(formatted_words)
-
-def format_breed_name(breed_name):
-    # Split the breed name into words and capitalize the first letter of each word
     words = breed_name.split()
     formatted_words = [word.capitalize() for word in words]
     return "_".join(formatted_words)
