@@ -1,14 +1,12 @@
 import requests
 from bs4 import BeautifulSoup
 from flask import Flask, request, jsonify
-from flask_cors import CORS
 from tensorflow.keras.models import load_model
 from PIL import Image
 import numpy as np
 from dog_breed_names import dog_names
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for all origins
 
 model = load_model("dog_model.keras")
 class_names = dog_names()
@@ -53,7 +51,9 @@ def predict():
         breed_name_final = breed_name.split("-")[1]
         breed_description = scrape_dog_description(breed_name_final)
         
-        return jsonify({"prediction": breed_name, "description": breed_description})
+        response = jsonify({"prediction": breed_name, "description": breed_description})
+        response.headers.add("Access-Control-Allow-Origin", "*")  
+        return response
     
     except Exception as e:
         return jsonify({"error": str(e)}), 400
